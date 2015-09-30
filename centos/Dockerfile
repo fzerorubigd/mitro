@@ -1,25 +1,26 @@
-FROM centos:centos6
-MAINTAINER Toni Pizà <tpiza@habitissimo.com>
+FROM java:latest
+MAINTAINER fzerorubigd <fzero@rubi.gd>
 
 ENV NODE_PATH /srv/mitro/browser-ext/api/build/node/lib/node_modules
 
-RUN rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
-RUN yum install -y postgresql
-RUN yum install -y postgresql-contrib
-RUN yum install -y npm.noarch
-RUN yum install -y git
-RUN yum install -y ant
-RUN yum install -y ant-nodeps
-RUN yum install -y java-1.7.0-openjdk-devel.x86_64
-
-RUN yum install -y xz
-RUN yum install -y wget
-RUN yum install -y tar
-RUN yum install -y unzip
-RUN yum install -y bzip2
-
-RUN yum install -y python-setuptools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ssh \
+        wget \
+        git \
+        tar \
+        unzip \
+        bzip2 \
+        python-setuptools \
+        ant \
+    && rm -rf /var/lib/apt/lists/*
+    
 RUN easy_install argparse
+
+RUN wget --quiet --no-check-certificate -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
 # mitro expects the keys to be in this dir
 RUN mkdir -p /mitrocore_secrets/sign_keyczar
