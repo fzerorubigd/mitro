@@ -5,6 +5,7 @@
 POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-${POSTGRESQL_ENV_POSTGRES_PASSWORD}}
 POSTGRES_USER=${POSTGRES_USER:-${POSTGRESQL_ENV_POSTGRES_USER}}
 POSTGRES_USER=${POSTGRES_USER:-postgres}
+DOMAIN=${DOMAIN:-${VIRTUAL_HOST}}
 [ -z "${POSTGRES_PASSWORD}" ] && echo "Postgres password undefined! Add -e POSTGRES_PASSWORD=\"blabla\" to the docker run parameters!" && exit 1
 [ -z "${DOMAIN}" ] && echo "Domain undefined! Add -e DOMAIN=\"ip or domain name\" to the docker run parameters!" && exit 1
 
