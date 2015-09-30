@@ -1,4 +1,4 @@
-FROM java:latest
+FROM java:7
 MAINTAINER fzerorubigd <fzero@rubi.gd>
 
 ENV NODE_PATH /srv/mitro/browser-ext/api/build/node/lib/node_modules
@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         bzip2 \
         python-setuptools \
         ant \
+        ant-optional \
     && rm -rf /var/lib/apt/lists/*
     
 RUN easy_install argparse
