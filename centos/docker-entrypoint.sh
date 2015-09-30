@@ -2,8 +2,8 @@
 
 # check environment variables
 [ -z "${DB_PORT_5432_TCP_ADDR}" ] && echo "The Postgres container is not correctly linked! Add --link postgres:db to the docker run parameters!" && exit 1
-POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-${POSTGRESQL_ENV_POSTGRES_PASSWORD}}
-POSTGRES_USER=${POSTGRES_USER:-${POSTGRESQL_ENV_POSTGRES_USER}}
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-${DB_ENV_POSTGRES_PASSWORD}}
+POSTGRES_USER=${POSTGRES_USER:-${DB_ENV_POSTGRES_USER}}
 POSTGRES_USER=${POSTGRES_USER:-postgres}
 DOMAIN=${DOMAIN:-${VIRTUAL_HOST}}
 [ -z "${POSTGRES_PASSWORD}" ] && echo "Postgres password undefined! Add -e POSTGRES_PASSWORD=\"blabla\" to the docker run parameters!" && exit 1
