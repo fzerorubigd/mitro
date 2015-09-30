@@ -2,6 +2,9 @@
 
 # check environment variables
 [ -z "${DB_PORT_5432_TCP_ADDR}" ] && echo "The Postgres container is not correctly linked! Add --link postgres:db to the docker run parameters!" && exit 1
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-${POSTGRESQL_ENV_POSTGRES_PASSWORD}}
+POSTGRES_USER=${POSTGRES_USER:-${POSTGRESQL_ENV_POSTGRES_USER}}
+POSTGRES_USER=${POSTGRES_USER:-postgres}
 [ -z "${POSTGRES_PASSWORD}" ] && echo "Postgres password undefined! Add -e POSTGRES_PASSWORD=\"blabla\" to the docker run parameters!" && exit 1
 [ -z "${DOMAIN}" ] && echo "Domain undefined! Add -e DOMAIN=\"ip or domain name\" to the docker run parameters!" && exit 1
 
@@ -13,14 +16,14 @@ KEYS_PATH="/mitrocore_secrets/sign_keyczar"
 ant test
 
 # check the postgres connection and the existence of the database
-if [ "`PGPASSWORD="${POSTGRES_PASSWORD}" psql -h${DB_PORT_5432_TCP_ADDR} -Upostgres -lqt | cut -d \| -f 1 | grep -w ${DDBB} | wc -l`" -eq "0" ]; then
+if [ "`PGPASSWORD="${POSTGRES_PASSWORD}" psql -h${DB_PORT_5432_TCP_ADDR} -U${POSTGRES_USER} -lqt | cut -d \| -f 1 | grep -w ${DDBB} | wc -l`" -eq "0" ]; then
         echo "Database ${DDBB} does not exist!"
-        PGPASSWORD="${POSTGRES_PASSWORD}" psql -h${DB_PORT_5432_TCP_ADDR} -Upostgres -c "CREATE DATABASE ${DDBB} WITH OWNER postgres ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE='en_US.utf8'"
+        PGPASSWORD="${POSTGRES_PASSWORD}" psql -h${DB_PORT_5432_TCP_ADDR} -U${POSTGRES_USER} -c "CREATE DATABASE ${DDBB} WITH OWNER ${POSTGRES_USER} ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE='en_US.utf8'"
 fi
 
 
 # change the postgresql connection string to point to db link
-sed -i "s|postgresql://localhost:5432/${DDBB}|postgresql://${DB_PORT_5432_TCP_ADDR}:5432/${DDBB}?user=postgres\&amp;password=${POSTGRES_PASSWORD}|" /srv/mitro/mitro-core/build.xml
+sed -i "s|postgresql://localhost:5432/${DDBB}|postgresql://${DB_PORT_5432_TCP_ADDR}:5432/${DDBB}?user=${POSTGRES_USER}\&amp;password=${POSTGRES_PASSWORD}|" /srv/mitro/mitro-core/build.xml
 # do not generate random secrets every time server starts
 # https://github.com/mitro-co/mitro/issues/128#issuecomment-129950839 
 sed -i "/<sysproperty key=\"generateSecretsForTest\" value=\"true\"\/>/d" /srv/mitro/mitro-core/build.xml
